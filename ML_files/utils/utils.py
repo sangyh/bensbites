@@ -140,10 +140,9 @@ def get_embedding(text, model="text-embedding-ada-002"):
 
 
 
-def search_items(df, query, n=3, pprint=True):
+def search_items(df, query, n=5, pprint=True):
    embedding = get_embedding(query, model='text-embedding-ada-002')
-   df['similarities'] = df.ada_embedding.apply(lambda x: cosine_similarity(x, embedding))
-   res = df[['url', 'section','item_text','item_text_len','similarities']].sort_values('similarities', ascending=False).head(n).to_json(orient = "records")
-   print(df.columns)
+   df['similarity'] = df.ada_embedding.apply(lambda x: round(cosine_similarity(x, embedding)*100,2))
+   res = df[['url', 'section','item_text','item_url','similarity']].sort_values('similarity', ascending=False).head(n).to_json(orient = "records")
    return res
  

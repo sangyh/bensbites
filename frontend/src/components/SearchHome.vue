@@ -10,9 +10,10 @@
         <div class="mx-16">
             <h1 class="text-3xl font-bold mt-0 mb-6">Ben's Bites Lookup</h1>
             <h3 class="text-1xl font-bold mb-8"> Semantic search to help find your favorite AI tools</h3>
-            <a href="https://twitter.com/sangyh2" class="text-gray-700 mb-8 leading-relaxed text-l">
-                Built by @sangyh2
-            </a>
+            <p class="text-gray-700 mb-8 leading-relaxed text-l ">
+                Built by 
+                  <a href="https://twitter.com/sangyh2" class="text-blue-500 underline">@sangyh2</a>
+            </p>
         </div>
     </div>
     <!-- Jumbotron -->
@@ -22,23 +23,16 @@
       <button type="submit"  class="py-2 px-3 rounded-md bg-blue-500 text-white">Go</button>
     </form>
     
-    <!-- <div class="bg-gray-100" v-if="results.length > 0">
-      <ul>
-        <li v-for="result in results" :key="result.id">
-          {{ result.url}},  {{result.text}},  {{result.extlink}}
-        </li>
-      </ul>
-    </div> -->
-    <div v-if="isLoading" class="bg-gray-200 h-12 w-12 rounded-full">
+    <div v-if="isLoading" class="bg-gray-200 h-12 w-12 rounded-full mx-aut0">
       <p>LOADING</p>
     </div>
     
     <div v-else>
       <div class="bg-gray-100 mx-auto mt-5 px-4 py-4" v-if="results.length > 0">
         <div class="flex justify-between items-center mb-4 font-semibold text-gray-800">
-            <div class="w-1/5">Blog</div>
-            <div class="w-1/5">Category</div>
-            <div class="w-1/5">Tool</div>
+            <div class="w-1/5">Post</div>
+            <div class="w-1/5">Section</div>
+            <div class="w-1/5">Info</div>
             <div class="w-1/5">Link</div>
             <div class="w-1/5">Similarity</div>
         </div>
@@ -46,7 +40,18 @@
         <table class="table-fixed w-full">
           <tbody>
             <tr v-for="row in results" :key="row">
-              <td v-for="value in row" v-bind:key="value"  class="justify-between items-center mb-4 w-1/5">{{ value }}</td>
+              <!-- <td v-for="value in row" v-bind:key="value"  class="justify-between items-center mb-4 w-1/5">{{ value }}</td> -->
+              <td class="justify-between items-center mb-4 w-1/5">{{ row.url }}</td>
+              <td class="justify-between items-center mb-4 w-1/5">{{ row.section }}</td>
+              <td class="justify-between items-center mb-4 w-1/5">{{ row.item_text }}</td>
+              <td class="justify-between items-center mb-4 w-1/5">
+                <ul>
+                  <li  v-for="ext_url in row.item_url" :key="ext_url">
+                     <p class="text-blue-500 underline" v-html=formattedSentence(ext_url)></p>
+                  </li>
+                </ul>
+              </td>
+              <td class="justify-between items-center mb-4 w-1/5">{{ row.similarity }}</td>
             </tr>
           </tbody>
         </table> 
@@ -79,6 +84,8 @@ export default {
         }
       });
       this.results = JSON.parse(response.data);
+    
+
       } catch (error) {
         // Display an error message to the user
         this.errorMessage = 'There was an error while fetching the data';
@@ -91,8 +98,24 @@ export default {
       } finally {
         this.isLoading = false;
       }
+    },
+
+    formattedSentence(row) {
+      console.log('inside computed',  row)
+      const text = 'link' /* row[0] */
+      const url = row[1]
+      console.log(row[0])
+      const newtext = `<a href="${url}">${text}</a>`;
+      return newtext
+      /* const sentence = row.item_text
+      console.log('inside computed:', row)
+      
+      const newtext = `<a href="${url}">${text}</a>`;
+      const formattedsent = sentence.replace(text, newtext); 
+      console.log(formattedsent)
+      return formattedsent */
     }
-  }
+  },
 }
 
 </script>
