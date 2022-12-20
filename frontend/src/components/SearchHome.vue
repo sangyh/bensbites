@@ -28,7 +28,7 @@
     </form>
     
     <div v-if="isLoading" class="w-full text-center px-20 py-4">
-      <p class="bg-gray-200 rounded-full">LOADING</p>
+      <p class="">Hang tight...</p>
     </div>
     
     <div v-else>
@@ -41,23 +41,23 @@
             <div class="w-1/12">Similarity</div>
         </div>
 
-        <table class="table-fixed w-full">
+        <table class="table-fixed w-full border-t border-b">
           <tbody>
             <tr v-for="row in results" :key="row" class="overflow-x-auto">
               <!-- <td v-for="value in row" v-bind:key="value"  class="justify-between items-center mb-4 w-1/5">{{ value }}</td> -->
-              <td class="justify-between items-center mb-4 w-4/12 text-blue-500 underline">
+              <td class="border-t justify-between items-center mb-4 w-4/12 px-1 text-blue-500 underline">
                 <a v-bind:href="row.url" target="_blank">{{ row.url }}</a>
               </td>
-              <td class="justify-between items-center mb-4 w-2/12">{{ row.section }}</td>
-              <td class="justify-between items-center mb-4 w-4/12">{{ row.item_text }}</td>
-              <td class="justify-between items-center mb-4 w-1/12">
+              <td class="border-t justify-between items-center mb-4 w-2/12 px-1">{{ row.section }}</td>
+              <td class="border-t justify-between items-center mb-4 w-4/12 px-1">{{ row.item_text }}</td>
+              <td class="border-t justify-between items-center mb-4 w-1/12 px-1">
                 <ul>
                   <li  v-for="ext_url in row.item_url" :key="ext_url">
                      <p class="text-blue-500 underline" v-html=formattedSentence(ext_url)></p>
                   </li>
                 </ul>
               </td>
-              <td class="justify-between items-center mb-4 w-1/12">{{ row.similarity }}</td>
+              <td class="border-t justify-between items-center mb-4 w-1/12 px-1">{{ row.similarity }}</td>
             </tr>
           </tbody>
         </table> 
