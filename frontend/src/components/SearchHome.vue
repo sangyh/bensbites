@@ -26,6 +26,10 @@
       <input type="text" v-model="query" placeholder="Search..." class="w-2/5 py-2 px-3 rounded-md bg-gray-200 placeholder-gray-700"/>
       <button type="submit"  class="py-2 px-3 rounded-md bg-blue-500 text-white">Go</button>
     </form>
+    <div class="'w-full text-center px-5 py-5'">
+      <p> Try searching for "stable diffusion" or "podcasting AI tools"</p>
+    </div>
+    
     
     <div v-if="isLoading" class="w-full text-center px-20 py-4">
       <p class="">Hang tight...</p>
