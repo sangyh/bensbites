@@ -111,10 +111,8 @@ export default {
     },
 
     formattedSentence(row) {
-      console.log('inside computed',  row)
       const text = 'link' /* row[0] */
       const url = row[1]
-      console.log(row[0])
       const newtext = `<a href="${url}" target="_blank">${text}</a>`;
       return newtext
       /* const sentence = row.item_text
