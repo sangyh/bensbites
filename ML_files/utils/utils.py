@@ -147,5 +147,11 @@ def search_items(df, query, n=5, pprint=True):
    res_df = df[['url', 'section','item_text','item_url','similarity']].sort_values('similarity', ascending=False).head(n)
    res_json = res_df.to_json(orient = "records")
 
-   return res_json, res_df.index
+   return res_json
  
+def filter_items(df, topic_df, topic, n=10):
+    item_ind = topic_df[topic_df['topic']==topic]['index']
+    res_df = df[df.index.isin(item_ind)][['url', 'section','item_text','item_url']].head(n)
+    res_json = res_df.to_json(orient = "records")
+
+    return res_json

@@ -16,13 +16,41 @@ def load_file():
 
 def load_topics():
     print('Loading topics file')
-    ### read embeddings
+    ### read topics
     topics_df = pd.read_csv('ML_files/item_topics.csv')
 
     print(topics_df.columns)
     return topics_df
 
-def main(query):
+def get_topics():
+    topics_df = cache.get('all_topics')
+    if topics_df is None:
+        topics_df = load_topics()
+        cache.set('all_topics', topics_df, timeout=3600)
+
+    print('Topics loaded')
+
+    all_topics = topics_df.topic.unique().tolist()
+    return all_topics
+
+def filter_topics(topic):
+    print('Topic to filter:', topic)
+    df = cache.get('all_embeddings')
+    topics_df = cache.get('all_topics')
+
+    if df is None:
+        df = load_file()
+        cache.set('all_embeddings', df, timeout=3600)
+
+    if topics_df is None:
+        topics_df = load_topics()
+        cache.set('all_topics', topics_df, timeout=3600)    
+
+    results = utils.filter_items(df, topics_df, topic)
+
+    return results
+
+def get_search_results(query):
     ROOT_DIR = os.path.abspath('./')
 
     if (os.environ.get("OPENAI_API_KEY") == None):
@@ -32,13 +60,11 @@ def main(query):
     openai.api_key = os.getenv("OPENAI_API_KEY")
 
     df = cache.get('all_embeddings')
-    topics_df = cache.get('all_topics')
+    
     if df is None:
         df = load_file()
-        topics_df = load_topics()
         cache.set('all_embeddings', df, timeout=3600)
-        cache.set('all_topics', topics_df, timeout=3600)
-    print('File loaded')
+    print('Embeddings loaded')
 
 
     if query=='':
@@ -46,11 +72,7 @@ def main(query):
         
     else:
         # Process the input and print the results
-        results, topic_ind = utils.search_items(df, query, n=5)
-        print(topic_ind)
-        topics = topics_df[topics_df['index'].isin(topic_ind)]['topic']
-        print(topics)
+        results = utils.search_items(df, query, n=5)
     return results
 
-if __name__ == '__main__':
-  main()
+

@@ -29,6 +29,11 @@
     <div class="'w-full text-center px-5 py-5'">
       <p> Try searching for "stable diffusion" or "podcasting AI tools"</p>
     </div>
+
+    <!-- Load all topics -->
+    <div>
+      <allTopics v-bind:topics="topics" @selectedtopic="filterTopics"/>
+    </div>
     
     
     <div v-if="isLoading" class="w-full text-center px-20 py-4">
@@ -36,75 +41,37 @@
     </div>
     
     <div v-else>
-      <div class="bg-gray-100 mx-auto mt-5 px-4 py-4" v-if="results.length > 0">
-
-
-        <div class="flex flex-col">
-          <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-              <div class="overflow-x-auto">
-                <table class="table-fixed min-w-full border-t border-b">
-                  <thead class="border-b">
-                    <tr>
-                      <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                        Post
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                        Section
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                        Info
-                      </th>
-                      <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                        Link
-                      </th>
-                      
-                    </tr>
-                  </thead>
-
-
-                  <tbody>
-                    <tr v-for="row in results" :key="row" class="overflow-x-auto border-b">
-                      <!-- <td v-for="value in row" v-bind:key="value"  class="justify-between items-center mb-4 w-1/5">{{ value }}</td> -->
-                      <td class="border-t justify-between items-center mb-4 w-4/12 px-1 text-blue-500 underline">
-                        <a v-bind:href="row.url" target="_blank">{{ row.url }}</a>
-                      </td>
-                      <td class="border-t justify-between items-center mb-4 w-2/12 px-1">{{ row.section }}</td>
-                      <td class="border-t justify-between items-center mb-4 w-4/12 px-1">{{ row.item_text }}</td>
-                      <td class="border-t justify-between items-center mb-4 w-1/12 px-1">
-                        <ul>
-                          <li  v-for="ext_url in row.item_url" :key="ext_url">
-                            <p class="text-blue-500 underline" v-html=formattedSentence(ext_url)></p>
-                          </li>
-                        </ul>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table> 
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
+      <SearchResults v-bind:results="results"/>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import SearchResults from './SearchResults'
+import allTopics from './allTopics'
 
 export default {
+  components: {
+    SearchResults,
+    allTopics
+  },
+
   data() {
     return {
       query: '',
       results: [],
+      topics:[],
+      topic2filter:'',
       isLoading: false,
       hasError: false
     }
   },
+
   mounted: function() {
-    this.search()
+    this.search(),
+    this.get_topics()
   },
+
   methods: {
     async search() {
       this.isLoading = true;
@@ -116,7 +83,7 @@ export default {
         }
       });
       this.results = JSON.parse(response.data);
-    
+      console.log(this.results)
 
       } catch (error) {
         // Display an error message to the user
@@ -131,19 +98,47 @@ export default {
         this.isLoading = false;
       }
     },
+    
+    async get_topics() {
+      try {
+        // process response data
+        const response = await axios.get('/search/topics/');
+        this.topics = response.data;
+      } catch (error) {
+        // Display an error message to the user
+        this.errorMessage = 'There was an error while fetching the data';
 
-    formattedSentence(row) {
-      const text = 'link' /* row[0] */
-      const url = row[1]
-      const newtext = `<a href="${url}" target="_blank">${text}</a>`;
-      return newtext
-      /* const sentence = row.item_text
-      console.log('inside computed:', row)
-      
-      const newtext = `<a href="${url}">${text}</a>`;
-      const formattedsent = sentence.replace(text, newtext); 
-      console.log(formattedsent)
-      return formattedsent */
+        // Log the error
+        console.error(error);
+
+        // Update the UI to reflect the error state
+        this.hasError = true;
+      } 
+    },
+
+    async filterTopics(selectedtopic){
+      this.isLoading = true;
+      /* endpoint: filtertopics */
+      try {
+        // process response data
+        const response = await axios.get('/search/filtertopics/', {
+        params: {
+          q: selectedtopic
+        }
+      });
+      this.results = JSON.parse(response.data);
+      } catch (error) {
+        // Display an error message to the user
+        this.errorMessage = 'There was an error while fetching the data';
+
+        // Log the error
+        console.error(error);
+
+        // Update the UI to reflect the error state
+        this.hasError = true;
+      } finally {
+        this.isLoading = false;
+      }
     }
   },
 }

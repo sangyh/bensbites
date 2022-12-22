@@ -20,7 +20,6 @@ from django.shortcuts import render
 
 vue_urls = [
   path('', lambda request: HttpResponse(render(request, 'vue_index.html'))),
-  path('another-path/', lambda request: HttpResponse(render(request, 'vue_index.html'))),
 ]
 
 urlpatterns = [
