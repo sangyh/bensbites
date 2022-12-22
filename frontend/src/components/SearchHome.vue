@@ -58,9 +58,6 @@
                       <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
                         Link
                       </th>
-                      <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                        Similarity
-                      </th>
                       
                     </tr>
                   </thead>
@@ -81,7 +78,6 @@
                           </li>
                         </ul>
                       </td>
-                      <td class="border-t justify-between items-center mb-4 w-1/12 px-1">{{ row.similarity }}</td>
                     </tr>
                   </tbody>
                 </table> 
@@ -105,6 +101,9 @@ export default {
       isLoading: false,
       hasError: false
     }
+  },
+  mounted: function() {
+    this.search()
   },
   methods: {
     async search() {

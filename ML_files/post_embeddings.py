@@ -15,13 +15,13 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 ### read slugs
 all_slugs = []
-with open('bensbites_slugs_dec17.txt') as f:
+with open('bensbites_slugs_dec20.txt') as f:
     for line in f:
         all_slugs.append(line.replace('\n',''))
 
 
 ### read posts json
-f = open('bensbites_scraped_dec17.json')
+f = open('bensbites_scraped_dec20.json')
 data = json.load(f)
 f.close()  
 
@@ -39,5 +39,5 @@ df['item_url'] = df['item'].apply(lambda x:x[1])
 df['item_text_len'] = df['item_text'].apply(len)
 df = df[df.item_text_len>0]
 df['ada_embedding'] = df.item_text.apply(lambda x: utils.get_embedding(x, model='text-embedding-ada-002'))
-df.to_csv('./embedded_bensbites_dec17.csv', index=False)
+df.to_csv('./embedded_bensbites_dec20.csv', index=False)
 
