@@ -5,48 +5,52 @@ import os
 import openai
 from ast import literal_eval
 from django.core.cache import cache
+import json
 
 def load_file():
     print('Loading file')
     ### read embeddings
-    df = pd.read_csv('ML_files/embedded_bensbites_dec20.csv')
-    df.ada_embedding = df.ada_embedding.apply(literal_eval)
+    df = pd.read_csv('ML_files/embedded_bensbites.csv')
+    #print(df.columns)
+    #df.ada_embedding = df.ada_embedding.apply(literal_eval)
     df.item_url = df.item_url.apply(literal_eval)
     return df
 
 def load_topics():
-    print('Loading topics file')
-    ### read topics
-    topics_df = pd.read_csv('ML_files/item_topics.csv')
+    print('Loading topics json')
+    
+    ### read existing json
+    with open('ML_files/topicid2labels.json', 'r') as f:
+        # Load the JSON data into a Python object
+        topics2labels = json.load(f)
 
-    print(topics_df.columns)
-    return topics_df
+    return topics2labels
 
 def get_topics():
-    topics_df = cache.get('all_topics')
-    if topics_df is None:
-        topics_df = load_topics()
-        cache.set('all_topics', topics_df, timeout=3600)
+    topics2labels = cache.get('all_topics')
+    if topics2labels is None:
+        topics2labels = load_topics()
+        cache.set('all_topics', topics2labels, timeout=3600)
 
     print('Topics loaded')
 
-    all_topics = topics_df.topic.unique().tolist()
+    all_topics = topics2labels.values()
     return all_topics
 
 def filter_topics(topic):
     print('Topic to filter:', topic)
     df = cache.get('all_embeddings')
-    topics_df = cache.get('all_topics')
+    topics2labels = cache.get('all_topics')
 
     if df is None:
         df = load_file()
         cache.set('all_embeddings', df, timeout=3600)
 
-    if topics_df is None:
-        topics_df = load_topics()
-        cache.set('all_topics', topics_df, timeout=3600)    
+    if topics2labels is None:
+        topics2labels = load_topics()
+        cache.set('all_topics', topics2labels, timeout=3600)    
 
-    results = utils.filter_items(df, topics_df, topic)
+    results = utils.filter_items(df, topic)
 
     return results
 
@@ -74,5 +78,3 @@ def get_search_results(query):
         # Process the input and print the results
         results = utils.search_items(df, query, n=5)
     return results
-
-
